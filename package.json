@@ -2,19 +2,34 @@
   "name": "play-snake-cli",
   "version": "1.0.0",
   "description": "Classic CLI snake game for the terminal",
-  "keywords": ["snake", "game", "snake-game", "cli-game", "terminal-game", "ascii-game", "nodejs-game"],
+  "keywords": [
+    "snake",
+    "game",
+    "snake-game",
+    "cli-game",
+    "terminal-game",
+    "ascii-game",
+    "nodejs-game"
+  ],
   "license": "MIT",
   "author": "Vignesh Esakkiappan",
-  "type": "commonjs",
+  "type": "module",
   "main": "index.js",
   "bin": {
     "play-snake-cli": "index.js"
   },
   "repository": {
-     "type": "git",
-     "url": "https://github.com/beingvig/play-snake-cli.git"
-   },
+    "type": "git",
+    "url": "https://github.com/beingvig/play-snake-cli.git"
+  },
+  "engines": {
+    "node": ">=14"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "chalk": "^5.6.2",
+    "neo-blessed": "^0.2.0"
   }
 }
