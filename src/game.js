@@ -1,4 +1,5 @@
-import { screen, welcomeBox, gameBox, gameGrid, scoreBig, highScoreBig, pauseBox, gameOverBox, gameOverScore } from './screens.js';
+import { screen, welcomeBox, gameBox, gameGrid, scoreDisplay, highScoreDisplay, pauseBox, gameOverBox, gameOverScore, renderBigNumber } from './screens.js';
+import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
 
@@ -39,8 +40,8 @@ export function initGame() {
   direction = { x: 1, y: 0 };
   score = 0;
   loadHighScore();
-  scoreBig.setContent(score.toString());
-  highScoreBig.setContent(highScore.toString());
+  scoreDisplay.setContent(renderBigNumber(score, chalk.green));
+  highScoreDisplay.setContent(renderBigNumber(highScore, chalk.yellow));
   spawnFood();
   draw();
 }
@@ -93,8 +94,12 @@ function move() {
   // Check if food eaten
   if (head.x === food.x && head.y === food.y) {
     score += 10;
-    scoreBig.setContent(score.toString());
-    highScoreBig.setContent(highScore.toString());
+    if (score > highScore) {
+      highScore = score;
+      saveHighScore();
+    }
+    scoreDisplay.setContent(renderBigNumber(score, chalk.green));
+    highScoreDisplay.setContent(renderBigNumber(highScore, chalk.yellow));
     spawnFood();
   } else {
     snake.pop(); // Remove tail if no food eaten
