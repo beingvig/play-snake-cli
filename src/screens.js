@@ -5,122 +5,127 @@ const screen = blessed.screen({
   title: 'Snake'
 });
 
+// Welcome Screen
 const welcomeBox = blessed.box({
   parent: screen,
   top: 'center',
   left: 'center',
-  width: 30,
-  height: 10,
+  width: 40,
+  height: 12,
   border: { type: 'line' },
-  content: '{center}Snake{/center}\n\n{center}Play (Enter){/center}\n\n{center}Exit (Esc){/center}',
+  content: '\n{center}{bold}Snake{/bold}{/center}\n\n\n{center}Play (Enter){/center}\n\n{center}Exit (Esc){/center}',
   tags: true,
 });
 
+// Game Screen
 const gameBox = blessed.box({
   parent: screen,
   top: 0,
   left: 0,
   width: '100%',
   height: '100%',
-  border: { type: 'line' },
   hidden: true,
+});
+
+const controlsLeft = blessed.text({
+  parent: gameBox,
+  top: 'center',
+  left: 2,
+  content: 'forward: W\ndown: S\nleft: A\nright: D\n\npause: Enter /space\nExit: esc',
+  tags: true,
+});
+
+const scoreLabel = blessed.text({
+  parent: gameBox,
+  top: 8,
+  right: 18,
+  content: 'your score',
+});
+
+const scoreBig = blessed.bigtext({
+  parent: gameBox,
+  top: 10,
+  right: 18,
+  content: '0',
+  fch: '█',
+});
+
+const highScoreLabel = blessed.text({
+  parent: gameBox,
+  top: 18,
+  right: 18,
+  content: 'high score',
+});
+
+const highScoreBig = blessed.bigtext({
+  parent: gameBox,
+  top: 20,
+  right: 18,
+  content: '0',
+  fch: '█',
 });
 
 const gameGrid = blessed.box({
   parent: gameBox,
-  top: 3,
+  top: 'center',
   left: 'center',
-  width: '80%',
-  height: '80%',
-  border: { type: 'dashed' },
-});
-
-const scoreBox = blessed.text({
-  parent: gameBox,
-  top: 1,
-  right: 2,
-  content: 'Your score\n0',
+  width: 62,
+  height: 22,
+  border: { type: 'line' },
   tags: true,
 });
 
+// Pause Screen
 const pauseBox = blessed.box({
   parent: screen,
   top: 'center',
   left: 'center',
-  width: 30,
-  height: 10,
+  width: 40,
+  height: 12,
   border: { type: 'line' },
-  content: '{center}Paused{/center}\n\n{center}Resume (Enter){/center}\n\n{center}Exit (Esc){/center}',
+  content: '\n{center}{bold}Paused{/bold}{/center}\n\n\n{center}Resume (Enter){/center}\n\n{center}Exit (Esc){/center}',
   tags: true,
   hidden: true,
 });
 
+// Game Over Screen
 const gameOverBox = blessed.box({
   parent: screen,
   top: 'center',
   left: 'center',
-  width: 30,
-  height: 10,
+  width: 50,
+  height: 12,
   border: { type: 'line' },
-  content: '{center}Game Over{/center}\n\n{center}Play Again (Enter){/center}\n\n{center}Exit (Esc){/center}',
-  tags: true,
   hidden: true,
 });
 
-//Wellcome Screen controls
-screen.key('enter', () => {
-  welcomeBox.hide();
-  gameBox.show();
-  screen.render();
+const gameOverTitle = blessed.text({
+  parent: gameOverBox,
+  top: 1,
+  left: 'center',
+  content: '{bold}Game over{/bold}',
+  tags: true,
 });
 
-screen.key('escape', () => {
-  process.exit(0);
+const gameOverControls = blessed.text({
+  parent: gameOverBox,
+  top: 5,
+  left: 4,
+  content: 'Play again (Enter)\n\nExit (Esc)',
+  tags: true,
 });
 
-//Pause Screen controls
-let currentScreen = 'welcome';
-
-screen.key('enter', () => {
-  if (currentScreen === 'welcome') {
-    welcomeBox.hide();
-    gameBox.show();
-    currentScreen = 'game';
-    screen.render();
-  } else if (currentScreen === 'pause') {
-    pauseBox.hide();
-    gameBox.show();
-    currentScreen = 'game';
-    screen.render();
-  } else if (currentScreen === 'gameover') {
-    gameOverBox.hide();
-    welcomeBox.show();
-    currentScreen = 'welcome';
-    screen.render();
-  }
+const gameOverScore = blessed.text({
+  parent: gameOverBox,
+  top: 4,
+  right: 4,
+  content: 'your score\n0\nhigh score: 0',
+  align: 'left',
+  tags: true,
 });
 
-screen.key('space', () => {
-  if (currentScreen === 'game') {
-    gameBox.hide();
-    pauseBox.show();
-    currentScreen = 'pause';
-    screen.render();
-  }
+screen.key(['escape', 'q', 'C-c'], () => {
+  return process.exit(0);
 });
 
-screen.key('escape', () => {
-  process.exit(0);
-});
-
-//Game Over
-// screen.key('g', () => {
-//   gameBox.hide();
-//   gameOverBox.show();
-//   currentScreen = 'gameover';
-//   screen.render();
-// });
-
-screen.render();
-
-export { screen, welcomeBox, gameBox, gameGrid, scoreBox, pauseBox, gameOverBox };
+export { screen, welcomeBox, gameBox, gameGrid, scoreBig, highScoreBig, pauseBox, gameOverBox, gameOverScore };
