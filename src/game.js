@@ -1,4 +1,4 @@
-import { screen, welcomeBox, gameBox, gameGrid, scoreDisplay, highScoreDisplay, pauseBox, gameOverBox, gameOverScore, renderBigNumber } from './screens.js';
+import { screen, welcomeBox, gameBox, gameGrid, scoreDisplay, highScoreDisplay, pauseBox, gameOverBox, renderBigNumber } from './screens.js';
 import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
@@ -60,7 +60,7 @@ function draw() {
   let content = '';
   let grid = Array.from({ length: height }, () => Array.from({ length: width }, () => ' '));
   
-  grid[food.y][food.x] = '{red-bg} {/red-bg}';
+  grid[food.y][food.x] = '{yellow-bg} {/yellow-bg}';
   
   snake.forEach((segment, index) => {
     if (segment.y >= 0 && segment.y < height && segment.x >= 0 && segment.x < width) {
@@ -142,11 +142,6 @@ function pauseGame() {
 function gameOver() {
   pauseGame();
   currentScreen = 'gameover';
-  if (score > highScore) {
-    highScore = score;
-    saveHighScore();
-  }
-  gameOverScore.setContent(`your score\n${score}\nhigh score: ${highScore}`);
   gameOverBox.show();
   screen.render();
 }
