@@ -63,10 +63,14 @@ function draw() {
   grid[food.y][food.x] = '{yellow-bg} {/yellow-bg}';
   
   snake.forEach((segment, index) => {
-    if (segment.y >= 0 && segment.y < height && segment.x >= 0 && segment.x < width) {
-      grid[segment.y][segment.x] = index === 0 ? '{green-bg} {/green-bg}' : '{white-bg} {/white-bg}';
+  if (segment.y >= 0 && segment.y < height && segment.x >= 0 && segment.x < width) {
+    if (index === 0) {
+      grid[segment.y][segment.x] = '{#39ff14-bg} {/}'; // head - bright phosphor
+    } else {
+      grid[segment.y][segment.x] = '{#007700-bg} {/}'; // body - mid green
     }
-  });
+  }
+});
 
   for (let y = 0; y < height; y++) {
     content += grid[y].join('');

@@ -2,6 +2,29 @@ import blessed from 'neo-blessed';
 import chalk from 'chalk';
 import asciiArt from './ascii-art.json' with { type: 'json' };
 
+// Arcade color palette
+const colors = {
+  neonGreen: '#00ff00',
+  neonPink: '#ff00ff',
+  neonBlue: '#00ffff',
+  neonYellow: '#ffff00',
+  neonRed: '#ff0000',
+  darkBg: '#000000',
+};
+
+// const colors = {
+//   phosphorGreen:  '#39ff14',  // snake head, titles, borders
+//   bodyGreen:      '#00cc00',  // snake body
+//   tailGreen:      '#007700',  // snake tail
+//   ghostGreen:     '#003300',  // trail after-image
+//   orange:         '#c8a060',  // HUD labels, score borders
+//   red:            '#ff2200',  // death flash + game over title ONLY
+//   white:          '#ffffff',  // food
+//   mutedGreen:     '#1a4d1a',  // inactive/dim text
+//   darkBg:         '#000000',
+// };
+
+// Retro 7x5 block font for numbers
 const bigNumbers = {
   '0': ['███████', '█     █', '█     █', '█     █', '███████'],
   '1': ['  ███  ', ' █ ██  ', '   █   ', '   █   ', '███████'],
@@ -30,19 +53,33 @@ function renderBigNumber(num, colorFn) {
 
 const screen = blessed.screen({
   smartCSR: true,
-  title: 'Snake'
+  title: 'Snake',
+  program: blessed.program({ force: true })
 });
+
+// Set retro arcade background
+screen.append(new blessed.Box({
+  top: 0,
+  left: 0,
+  width: '100%',
+  height: '100%',
+  bg: colors.darkBg
+}));
 
 // Welcome Screen
 const welcomeBox = blessed.box({
   parent: screen,
   top: 'center',
   left: 'center',
-  width: 91,
-  height: 15,
-  content: '\n' + asciiArt.welcome + '\n\n{center}Play (Enter){/center}\n\n{center}Exit (Esc){/center}',
+  width: 62,
+  height: 22,
+  content: '\n\n\n\n\n' + chalk.hex(colors.neonGreen).bold(asciiArt.welcome) + '\n\n\n\n' +
+           chalk.hex(colors.neonYellow)('► PLAY (Enter) ◄') + '\n\n' +
+           chalk.hex(colors.neonRed)('EXIT (Esc)'),
   tags: true,
   align: 'center',
+  border: { type: 'double', stroke: chalk.hex(colors.neonBlue) },
+  style: { bg: colors.darkBg }
 });
 
 // Game Screen
@@ -53,6 +90,7 @@ const gameBox = blessed.box({
   width: '100%',
   height: '100%',
   hidden: true,
+  style: { bg: colors.darkBg }
 });
 
 const controlsLeft = blessed.text({
@@ -60,49 +98,56 @@ const controlsLeft = blessed.text({
   top: 2,
   left: 2,
   content:
-    chalk.cyan.bold('═══ MOVEMENT ═══\n\n') +
-    chalk.white.bold('  W') + chalk.gray(' - UP\n') +
-    chalk.white.bold('  S') + chalk.gray(' - DOWN\n') +
-    chalk.white.bold('  A') + chalk.gray(' - LEFT\n') +
-    chalk.white.bold('  D') + chalk.gray(' - RIGHT\n\n') +
-    chalk.yellow.bold('═══ CONTROLS ═══\n\n') +
-    chalk.white('  ENTER/SPACE') + chalk.gray(' - PAUSE\n') +
-    chalk.red('  ESC') + chalk.gray(' - QUIT'),
+    chalk.hex(colors.neonBlue).bold('╔═══ MOVEMENT ═══╗\n') +
+    chalk.hex(colors.neonBlue).bold('║') + chalk.hex(colors.neonGreen).bold('  W ') + chalk.gray(' - UP    ') + chalk.hex(colors.neonBlue).bold('   ║\n') +
+    chalk.hex(colors.neonBlue).bold('║') + chalk.hex(colors.neonGreen).bold('  S ') + chalk.gray(' - DOWN  ') + chalk.hex(colors.neonBlue).bold('   ║\n') +
+    chalk.hex(colors.neonBlue).bold('║') + chalk.hex(colors.neonGreen).bold('  A ') + chalk.gray(' - LEFT  ') + chalk.hex(colors.neonBlue).bold('   ║\n') +
+    chalk.hex(colors.neonBlue).bold('║') + chalk.hex(colors.neonGreen).bold('  D ') + chalk.gray(' - RIGHT ') + chalk.hex(colors.neonBlue).bold('   ║\n') +
+    chalk.hex(colors.neonBlue).bold('╚════════════════╝\n') +
+    chalk.hex(colors.neonPink).bold('╔═══ CONTROLS ═══╗\n') +
+    chalk.hex(colors.neonPink).bold('║') + chalk.yellow(' ENTER ') + chalk.gray('- PAUSE') + chalk.hex(colors.neonPink).bold('  ║\n') +
+    chalk.hex(colors.neonPink).bold('║') + chalk.yellow('  ESC  ') + chalk.gray('- QUIT ') + chalk.hex(colors.neonPink).bold('  ║\n') +
+    chalk.hex(colors.neonPink).bold('╚════════════════╝'),
   tags: false,
+  style: { bg: colors.darkBg }
 });
 
 const scoreLabel = blessed.text({
   parent: gameBox,
   top: 2,
   right: 2,
-  content: chalk.blue.bold('╔════════════════╗\n') +
-           chalk.blue.bold('║   YOUR SCORE   ║\n') +
-           chalk.blue.bold('╚════════════════╝'),
+  content: chalk.hex(colors.neonGreen).bold('╔══════════════╗\n') +
+           chalk.hex(colors.neonGreen).bold('║     SCORE    ║\n') +
+           chalk.hex(colors.neonGreen).bold('╚══════════════╝'),
   tags: false,
+  style: { bg: colors.darkBg }
 });
 
 const scoreDisplay = blessed.text({
   parent: gameBox,
   top: 6,
   right: 2,
-  content: renderBigNumber('0', chalk.green),
+  content: renderBigNumber('0', chalk.hex(colors.neonGreen)),
+  style: { bg: colors.darkBg }
 });
 
 const highScoreLabel = blessed.text({
   parent: gameBox,
   top: 13,
   right: 2,
-  content: chalk.yellow.bold('╔════════════════╗\n') +
-           chalk.yellow.bold('║   HIGH SCORE   ║\n') +
-           chalk.yellow.bold('╚════════════════╝'),
+  content: chalk.hex(colors.neonYellow).bold('╔══════════════╗\n') +
+           chalk.hex(colors.neonYellow).bold('║  HIGH SCORE  ║\n') +
+           chalk.hex(colors.neonYellow).bold('╚══════════════╝'),
   tags: false,
+  style: { bg: colors.darkBg }
 });
 
 const highScoreDisplay = blessed.text({
   parent: gameBox,
   top: 17,
   right: 2,
-  content: renderBigNumber('0', chalk.yellow),
+  content: renderBigNumber('0', chalk.hex(colors.neonYellow)),
+  style: { bg: colors.darkBg }
 });
 
 const gameGrid = blessed.box({
@@ -111,8 +156,9 @@ const gameGrid = blessed.box({
   left: 'center',
   width: 62,
   height: 22,
-  border: { type: 'line' },
+  border: { type: 'double', stroke: chalk.hex(colors.neonBlue) },
   tags: true,
+  style: { bg: colors.darkBg }
 });
 
 // Pause Screen
@@ -121,10 +167,13 @@ const pauseBox = blessed.box({
   top: 'center',
   left: 'center',
   width: 60,
-  height: 14,
-  content: '\n' + asciiArt.paused + '\n\n{center}Resume (Enter){/center}\n\n{center}Exit (Esc){/center}',
+  height: 18,
+  content: '\n\n\n\n' + chalk.hex(colors.neonPink).bold(asciiArt.paused) + '\n\n\n\n' +
+           chalk.hex(colors.neonGreen)('► RESUME (Enter) ◄') + '\n\n' +
+           chalk.hex(colors.neonRed)('EXIT (Esc)'),
   tags: true,
   align: 'center',
+  style: { bg: colors.darkBg },
   hidden: true,
 });
 
@@ -135,9 +184,13 @@ const gameOverBox = blessed.box({
   left: 'center',
   width: 80,
   height: 16,
-  content: '\n' + asciiArt.game_over + '\n\n{center}Play again (Enter){/center}\n\n{center}Exit (Esc){/center}',
+  content: '\n' + chalk.hex(colors.neonPink).bold(asciiArt.game_over) + '\n\n\n\n' +
+           chalk.hex(colors.neonGreen)('► PLAY AGAIN (Enter) ◄') + '\n\n' +
+           chalk.hex(colors.neonYellow)('EXIT (Esc)'),
   tags: true,
   align: 'center',
+  border: { type: 'double', stroke: chalk.hex(colors.neonPink) },
+  style: { bg: colors.darkBg },
   hidden: true,
 });
 
