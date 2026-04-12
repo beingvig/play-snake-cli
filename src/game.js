@@ -142,8 +142,19 @@ function pauseGame() {
 function gameOver() {
   pauseGame();
   currentScreen = 'gameover';
-  gameOverBox.show();
-  screen.render();
+
+  let flashes = 0;
+  const flashInterval = setInterval(() => {
+    gameBox.style.bg = flashes % 2 === 0 ? '#ff2200' : '#000000';
+    screen.render();
+    flashes++;
+    if (flashes >= 6) {
+      clearInterval(flashInterval);
+      gameBox.style.bg = '#000000';
+      gameOverBox.show();
+      screen.render();
+    }
+  }, 80);
 }
 
 // Controls
