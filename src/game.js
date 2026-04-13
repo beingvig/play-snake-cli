@@ -1,4 +1,7 @@
-import { screen, welcomeBox, gameBox, gameGrid, scoreDisplay, highScoreDisplay, pauseBox, gameOverBox, renderBigNumber } from './screens.js';
+import {
+  screen, welcomeBox, gameBox, gameGrid, scoreDisplay, highScoreDisplay, pauseBox, gameOverBox, renderBigNumber,
+  renderWelcomeContent, renderPauseContent, renderGameOverContent
+} from './screens.js';
 import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
@@ -29,6 +32,9 @@ let score = 0;
 let gameLoop = null;
 let food = { x: 0, y: 0 };
 let currentScreen = 'welcome';
+let menuSelection = 0;
+let animTick = 0;
+let animInterval = null;
 const width = 60;
 const height = 20;
 
@@ -136,7 +142,21 @@ function scheduleNextMove() {
 }
 
 function startGameLoop() {
+  stopAnimationLoop();
   scheduleNextMove();
+}
+
+function stopAnimationLoop() {
+  if (animInterval) clearInterval(animInterval);
+  animInterval = null;
+}
+
+function startAnimationLoop() {
+  if (animInterval) return;
+  animInterval = setInterval(() => {
+    animTick++;
+    updateMenuUI();
+  }, 250);
 }
 
 function pauseGame() {
@@ -149,6 +169,9 @@ function pauseGame() {
 function gameOver() {
   pauseGame();
   currentScreen = 'gameover';
+  menuSelection = 0;
+  startAnimationLoop();
+  gameOverBox.setContent(renderGameOverContent(menuSelection, animTick));
 
   let flashes = 0;
   const flashInterval = setInterval(() => {
@@ -164,53 +187,104 @@ function gameOver() {
   }, 80);
 }
 
+function updateMenuUI() {
+  if (currentScreen === 'welcome') {
+    welcomeBox.setContent(renderWelcomeContent(menuSelection, animTick));
+  } else if (currentScreen === 'pause') {
+    pauseBox.setContent(renderPauseContent(menuSelection, animTick));
+  } else if (currentScreen === 'gameover') {
+    gameOverBox.setContent(renderGameOverContent(menuSelection, animTick));
+  }
+  screen.render();
+}
+
 // Controls
 screen.key(['up', 'w'], () => {
-  if (direction.y === 0 && nextDirection.y === 0) nextDirection = { x: 0, y: -1 };
+  if (currentScreen === 'game') {
+    if (direction.y === 0 && nextDirection.y === 0) nextDirection = { x: 0, y: -1 };
+  } else {
+    menuSelection = (menuSelection - 1 + 2) % 2;
+    updateMenuUI();
+  }
 });
 
 screen.key(['down', 's'], () => {
-  if (direction.y === 0 && nextDirection.y === 0) nextDirection = { x: 0, y: 1 };
+  if (currentScreen === 'game') {
+    if (direction.y === 0 && nextDirection.y === 0) nextDirection = { x: 0, y: 1 };
+  } else {
+    menuSelection = (menuSelection + 1) % 2;
+    updateMenuUI();
+  }
 });
 
 screen.key(['left', 'a'], () => {
-  if (direction.x === 0 && nextDirection.x === 0) nextDirection = { x: -1, y: 0 };
+  if (currentScreen === 'game') {
+    if (direction.x === 0 && nextDirection.x === 0) nextDirection = { x: -1, y: 0 };
+  }
 });
 
 screen.key(['right', 'd'], () => {
-  if (direction.x === 0 && nextDirection.x === 0) nextDirection = { x: 1, y: 0 };
+  if (currentScreen === 'game') {
+    if (direction.x === 0 && nextDirection.x === 0) nextDirection = { x: 1, y: 0 };
+  }
 });
 
-screen.key(['enter'], () => {
+screen.key(['enter', 'space'], () => {
   if (currentScreen === 'welcome') {
-    welcomeBox.hide();
-    gameBox.show();
-    currentScreen = 'game';
-    initGame();
-    startGameLoop();
+    if (menuSelection === 0) { // PLAY
+      welcomeBox.hide();
+      gameBox.show();
+      currentScreen = 'game';
+      initGame();
+      startGameLoop();
+    } else { // EXIT
+      process.exit(0);
+    }
     screen.render();
   } else if (currentScreen === 'pause') {
-    pauseBox.hide();
-    currentScreen = 'game';
-    startGameLoop();
+    if (menuSelection === 0) { // RESUME
+      pauseBox.hide();
+      currentScreen = 'game';
+      startGameLoop();
+    } else { // EXIT
+      process.exit(0);
+    }
     screen.render();
   } else if (currentScreen === 'gameover') {
-    gameOverBox.hide();
-    currentScreen = 'game';
-    initGame();
-    startGameLoop();
+    if (menuSelection === 0) { // PLAY AGAIN
+      gameOverBox.hide();
+      currentScreen = 'game';
+      initGame();
+      startGameLoop();
+    } else { // EXIT
+      process.exit(0);
+    }
+    screen.render();
+  } else if (currentScreen === 'game') {
+    // Only handle pause (space/p) in game mode, but enter also toggles pause for convenience?
+    // The previous logic had space/p for pause.
+    pauseGame();
+    pauseBox.show();
+    currentScreen = 'pause';
+    menuSelection = 0;
+    startAnimationLoop();
+    pauseBox.setContent(renderPauseContent(menuSelection, animTick));
     screen.render();
   }
 });
 
-screen.key(['space', 'p'], () => {
+screen.key(['p'], () => {
   if (currentScreen === 'game') {
     pauseGame();
     pauseBox.show();
     currentScreen = 'pause';
+    menuSelection = 0;
+    startAnimationLoop();
+    pauseBox.setContent(renderPauseContent(menuSelection, animTick));
     screen.render();
   }
 });
 
 // Initial render
+startAnimationLoop();
 screen.render();

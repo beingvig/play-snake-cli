@@ -66,16 +66,43 @@ screen.append(new blessed.Box({
   bg: colors.darkBg
 }));
 
-// Welcome Screen
+// Welcome Screen Logic
+const neonPalette = [colors.neonGreen, colors.neonPink, colors.neonBlue, colors.neonYellow, colors.neonRed];
+
+function renderWelcomeContent(selectedIndex = 0, animTick = 0) {
+  const options = ['PLAY', 'EXIT'];
+  
+  // Static title
+  let content = '\n\n\n\n\n' + chalk.hex(colors.neonGreen).bold(asciiArt.welcome) + '\n\n\n\n';
+  
+  options.forEach((opt, i) => {
+    const isSelected = i === selectedIndex;
+    const isBlinking = isSelected && animTick % 2 === 0;
+    
+    let text = isSelected ? `► ${opt} ◄` : `  ${opt}  `;
+    let styled;
+    
+    if (isSelected) {
+      // Blinking Green when selected
+      styled = isBlinking ? chalk.hex(colors.neonGreen).bold(text) : chalk.hex(colors.neonGreen).dim(text);
+    } else {
+      // Static Yellow when inactive
+      styled = chalk.hex(colors.neonYellow).bold(text);
+    }
+    
+    content += styled + (i < options.length - 1 ? '\n\n' : '');
+  });
+  
+  return content;
+}
+
 const welcomeBox = blessed.box({
   parent: screen,
   top: 'center',
   left: 'center',
   width: 62,
   height: 22,
-  content: '\n\n\n\n\n' + chalk.hex(colors.neonGreen).bold(asciiArt.welcome) + '\n\n\n\n' +
-           chalk.hex(colors.neonYellow)('► PLAY (Enter) ◄') + '\n\n' +
-           chalk.hex(colors.neonRed)('EXIT (Esc)'),
+  content: renderWelcomeContent(0),
   tags: true,
   align: 'center',
   border: { type: 'double', stroke: chalk.hex(colors.neonBlue) },
@@ -161,32 +188,82 @@ const gameGrid = blessed.box({
   style: { bg: colors.darkBg }
 });
 
-// Pause Screen
+// Pause Screen Logic
+function renderPauseContent(selectedIndex = 0, animTick = 0) {
+  const options = ['RESUME', 'EXIT'];
+  
+  // Static title
+  let content = '\n\n\n\n' + chalk.hex(colors.neonPink).bold(asciiArt.paused) + '\n\n\n\n';
+  
+  options.forEach((opt, i) => {
+    const isSelected = i === selectedIndex;
+    const isBlinking = isSelected && animTick % 2 === 0;
+    
+    const text = isSelected ? `► ${opt} ◄` : `  ${opt}  `;
+    let styled;
+    
+    if (isSelected) {
+      // Blinking Green when selected
+      styled = isBlinking ? chalk.hex(colors.neonGreen).bold(text) : chalk.hex(colors.neonGreen).dim(text);
+    } else {
+      // Static Yellow when inactive
+      styled = chalk.hex(colors.neonYellow).bold(text);
+    }
+    
+    content += styled + (i < options.length - 1 ? '\n\n' : '');
+  });
+  
+  return content;
+}
+
 const pauseBox = blessed.box({
   parent: screen,
   top: 'center',
   left: 'center',
   width: 60,
   height: 18,
-  content: '\n\n\n\n' + chalk.hex(colors.neonPink).bold(asciiArt.paused) + '\n\n\n\n' +
-           chalk.hex(colors.neonGreen)('► RESUME (Enter) ◄') + '\n\n' +
-           chalk.hex(colors.neonRed)('EXIT (Esc)'),
+  content: renderPauseContent(0),
   tags: true,
   align: 'center',
   style: { bg: colors.darkBg },
   hidden: true,
 });
 
-// Game Over Screen
+// Game Over Screen Logic
+function renderGameOverContent(selectedIndex = 0, animTick = 0) {
+  const options = ['PLAY AGAIN', 'EXIT'];
+  
+  // Static title
+  let content = '\n' + chalk.hex(colors.neonPink).bold(asciiArt.game_over) + '\n\n\n\n';
+  
+  options.forEach((opt, i) => {
+    const isSelected = i === selectedIndex;
+    const isBlinking = isSelected && animTick % 2 === 0;
+    
+    const text = isSelected ? `► ${opt} ◄` : `  ${opt}  `;
+    let styled;
+    
+    if (isSelected) {
+      // Blinking Green when selected
+      styled = isBlinking ? chalk.hex(colors.neonGreen).bold(text) : chalk.hex(colors.neonGreen).dim(text);
+    } else {
+      // Static Yellow when inactive
+      styled = chalk.hex(colors.neonYellow).bold(text);
+    }
+    
+    content += styled + (i < options.length - 1 ? '\n\n' : '');
+  });
+  
+  return content;
+}
+
 const gameOverBox = blessed.box({
   parent: screen,
   top: 'center',
   left: 'center',
   width: 80,
   height: 16,
-  content: '\n' + chalk.hex(colors.neonPink).bold(asciiArt.game_over) + '\n\n\n\n' +
-           chalk.hex(colors.neonGreen)('► PLAY AGAIN (Enter) ◄') + '\n\n' +
-           chalk.hex(colors.neonYellow)('EXIT (Esc)'),
+  content: renderGameOverContent(0),
   tags: true,
   align: 'center',
   border: { type: 'double', stroke: chalk.hex(colors.neonPink) },
@@ -198,4 +275,4 @@ screen.key(['escape', 'q', 'C-c'], () => {
   return process.exit(0);
 });
 
-export { screen, welcomeBox, gameBox, gameGrid, scoreDisplay, highScoreDisplay, pauseBox, gameOverBox, renderBigNumber };
+export { screen, welcomeBox, gameBox, gameGrid, scoreDisplay, highScoreDisplay, pauseBox, gameOverBox, renderBigNumber, renderWelcomeContent, renderPauseContent, renderGameOverContent };
