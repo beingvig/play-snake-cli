@@ -24,6 +24,7 @@ function saveHighScore() {
 
 let snake = [];
 let direction = { x: 1, y: 0 };
+let nextDirection = { x: 1, y: 0 };
 let score = 0;
 let gameLoop = null;
 let food = { x: 0, y: 0 };
@@ -38,6 +39,7 @@ export function initGame() {
     { x: 3, y: 5 },
   ];
   direction = { x: 1, y: 0 };
+  nextDirection = { x: 1, y: 0 };
   score = 0;
   loadHighScore();
   scoreDisplay.setContent(renderBigNumber(score, chalk.green));
@@ -48,8 +50,8 @@ export function initGame() {
 
 function spawnFood() {
   while (true) {
-    food.x = Math.floor(Math.random() * width);
-    food.y = Math.floor(Math.random() * height);
+    food.x = 1 + Math.floor(Math.random() * (width - 2));
+    food.y = 1 + Math.floor(Math.random() * (height - 2));
     if (!snake.some(segment => segment.x === food.x && segment.y === food.y)) {
       break;
     }
@@ -82,9 +84,10 @@ function draw() {
 }
 
 function move() {
-  const head = { 
-    x: snake[0].x + direction.x, 
-    y: snake[0].y + direction.y 
+  direction = nextDirection;
+  const head = {
+    x: snake[0].x + direction.x,
+    y: snake[0].y + direction.y
   };
   
   // Collisions with walls or self
@@ -114,16 +117,16 @@ function move() {
 
 function scheduleNextMove() {
   if (gameLoop) clearTimeout(gameLoop);
-  
+
   // Decrease interval (increase speed) as score goes up
   let speed = Math.max(40, 120 - (score / 10) * 3);
-  
+
   // Terminal characters are typically taller than they are wide.
   // Delay vertical movements to make visual speed seem consistent.
   if (direction.y !== 0) {
     speed = Math.floor(speed * 1.6);
   }
-  
+
   gameLoop = setTimeout(() => {
     move();
     if (currentScreen === 'game') {
@@ -163,19 +166,19 @@ function gameOver() {
 
 // Controls
 screen.key(['up', 'w'], () => {
-  if (direction.y === 0) direction = { x: 0, y: -1 };
+  if (direction.y === 0 && nextDirection.y === 0) nextDirection = { x: 0, y: -1 };
 });
 
 screen.key(['down', 's'], () => {
-  if (direction.y === 0) direction = { x: 0, y: 1 };
+  if (direction.y === 0 && nextDirection.y === 0) nextDirection = { x: 0, y: 1 };
 });
 
 screen.key(['left', 'a'], () => {
-  if (direction.x === 0) direction = { x: -1, y: 0 };
+  if (direction.x === 0 && nextDirection.x === 0) nextDirection = { x: -1, y: 0 };
 });
 
 screen.key(['right', 'd'], () => {
-  if (direction.x === 0) direction = { x: 1, y: 0 };
+  if (direction.x === 0 && nextDirection.x === 0) nextDirection = { x: 1, y: 0 };
 });
 
 screen.key(['enter'], () => {
