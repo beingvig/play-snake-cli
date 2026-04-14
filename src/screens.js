@@ -125,12 +125,12 @@ const controlsLeft = blessed.text({
   top: 2,
   left: 2,
   content:
-    chalk.hex(colors.neonBlue).bold('╔═══ MOVEMENT ═══╗\n') +
-    chalk.hex(colors.neonBlue).bold('║') + chalk.hex(colors.neonGreen).bold('  W ') + chalk.gray(' - UP    ') + chalk.hex(colors.neonBlue).bold('   ║\n') +
-    chalk.hex(colors.neonBlue).bold('║') + chalk.hex(colors.neonGreen).bold('  S ') + chalk.gray(' - DOWN  ') + chalk.hex(colors.neonBlue).bold('   ║\n') +
-    chalk.hex(colors.neonBlue).bold('║') + chalk.hex(colors.neonGreen).bold('  A ') + chalk.gray(' - LEFT  ') + chalk.hex(colors.neonBlue).bold('   ║\n') +
-    chalk.hex(colors.neonBlue).bold('║') + chalk.hex(colors.neonGreen).bold('  D ') + chalk.gray(' - RIGHT ') + chalk.hex(colors.neonBlue).bold('   ║\n') +
-    chalk.hex(colors.neonBlue).bold('╚════════════════╝\n') +
+    chalk.hex(colors.neonGreen).bold('╔═══ MOVEMENT ═══╗\n') +
+    chalk.hex(colors.neonGreen).bold('║') + chalk.yellow('  W ') + chalk.gray(' - UP    ') + chalk.hex(colors.neonGreen).bold('   ║\n') +
+    chalk.hex(colors.neonGreen).bold('║') + chalk.yellow('  S ') + chalk.gray(' - DOWN  ') + chalk.hex(colors.neonGreen).bold('   ║\n') +
+    chalk.hex(colors.neonGreen).bold('║') + chalk.yellow('  A ') + chalk.gray(' - LEFT  ') + chalk.hex(colors.neonGreen).bold('   ║\n') +
+    chalk.hex(colors.neonGreen).bold('║') + chalk.yellow('  D ') + chalk.gray(' - RIGHT ') + chalk.hex(colors.neonGreen).bold('   ║\n') +
+    chalk.hex(colors.neonGreen).bold('╚════════════════╝\n') +
     chalk.hex(colors.neonPink).bold('╔═══ CONTROLS ═══╗\n') +
     chalk.hex(colors.neonPink).bold('║') + chalk.yellow(' ENTER ') + chalk.gray('- PAUSE') + chalk.hex(colors.neonPink).bold('  ║\n') +
     chalk.hex(colors.neonPink).bold('║') + chalk.yellow('  ESC  ') + chalk.gray('- QUIT ') + chalk.hex(colors.neonPink).bold('  ║\n') +
@@ -193,7 +193,7 @@ function renderPauseContent(selectedIndex = 0, animTick = 0) {
   const options = ['RESUME', 'EXIT'];
   
   // Static title
-  let content = '\n\n\n\n' + chalk.hex(colors.neonPink).bold(asciiArt.paused) + '\n\n\n\n';
+  let content = '\n\n\n\n' + chalk.hex(colors.neonYellow).bold(asciiArt.paused) + '\n\n\n\n';
   
   options.forEach((opt, i) => {
     const isSelected = i === selectedIndex;
@@ -234,7 +234,7 @@ function renderGameOverContent(selectedIndex = 0, animTick = 0) {
   const options = ['PLAY AGAIN', 'EXIT'];
   
   // Static title
-  let content = '\n' + chalk.hex(colors.neonPink).bold(asciiArt.game_over) + '\n\n\n\n';
+  let content = '\n' + chalk.hex(colors.neonYellow).bold(asciiArt.game_over) + '\n\n\n\n';
   
   options.forEach((opt, i) => {
     const isSelected = i === selectedIndex;

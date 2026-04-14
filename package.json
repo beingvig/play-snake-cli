@@ -14,7 +14,6 @@
   "license": "MIT",
   "author": "Vignesh Esakkiappan",
   "type": "module",
-  "main": "index.js",
   "bin": {
     "play-snake-cli": "index.js"
   },
